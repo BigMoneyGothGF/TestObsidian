@@ -1,4 +1,42 @@
 <form class="obsidian obsidian-form-bare" autocomplete="off">
+	<fieldset>
+		<legend>{{localize 'OBSIDIAN.SpellAttack'}}</legend>
+		<div class="obsidian-form-row obsidian-mixed-form-row obsidian-inline">
+			<div class="obsidian-fullwidth">
+				<label class="obsidian-inline">
+					<input type="text" class="obsidian-input-compact obsidian-input-num obsidian-input-num-sm"
+					       placeholder="0" data-dtype="Number" name="flags.obsidian.spells.attack.bonus"
+					       value="{{actor.flags.obsidian.spells.attack.bonus}}">
+					<span>{{localize 'OBSIDIAN.Bonus'}}</span>
+				</label>
+				<label class="obsidian-inline">
+					<input type="text" class="obsidian-input-compact obsidian-input-num obsidian-input-num-sm"
+					       name="flags.obsidian.spells.attack.fixed"
+					       value="{{actor.flags.obsidian.spells.attack.fixed}}">
+					<span>{{localize 'OBSIDIAN.Fixed'}}</span>
+				</label>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>{{localize 'OBSIDIAN.SaveDC'}}</legend>
+		<div class="obsidian-form-row obsidian-mixed-form-row obsidian-inline">
+			<div class="obsidian-fullwidth">
+				<label class="obsidian-inline">
+					<input type="text" class="obsidian-input-compact obsidian-input-num obsidian-input-num-sm"
+					       name="flags.obsidian.spells.save.bonus" placeholder="0" data-dtype="Number"
+					       value="{{actor.flags.obsidian.spells.save.bonus}}">
+					<label>{{localize 'OBSIDIAN.Bonus'}}</label>
+				</label>
+				<label class="obsidian-inline">
+					<input type="text" class="obsidian-input-compact obsidian-input-num obsidian-input-num-sm"
+					       name="flags.obsidian.spells.save.fixed"
+					       value="{{actor.flags.obsidian.spells.save.fixed}}">
+					<span>{{localize 'OBSIDIAN.Fixed'}}</span>
+				</label>
+			</div>
+		</div>
+	</fieldset>
 	<label class="obsidian-label-lg">{{localize 'OBSIDIAN.SlotOverride'}}</label>
 	<div class="obsidian-form-row obsidian-inline obsidian-align-labels">
 		{{#each (range 1 5)}}

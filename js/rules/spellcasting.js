@@ -85,6 +85,20 @@ export function prepareSpellcasting (actorData, flags) {
 		}
 	}
 
+	['attack', 'save'].forEach(prop => {
+		const collection = `${prop}s`;
+		flags.attributes.spellcasting[collection] =
+			flags.attributes.spellcasting[collection].map(n => {
+				if (flags.spells[prop]) {
+					if (!OBSIDIAN.notDefinedOrEmpty(flags.spells[prop].fixed)) {
+						return Number(flags.spells[prop].fixed);
+					}
+
+					return n + (flags.spells[prop].bonus || 0);
+				}
+			});
+	});
+
 	if (slotLevel > 0) {
 		if (totalCasters === 1 && nonFullCasters === 1) {
 			// Single-classed non-half-caster.

@@ -795,6 +795,12 @@ export const Rolls = {
 
 		if (hit.stat === 'spell') {
 			mods.push({mod: hit.spellMod, name: game.i18n.localize('OBSIDIAN.Spell')});
+			if (actor.flags.obsidian.spells.attack && actor.flags.obsidian.spells.attack.bonus) {
+				mods.push({
+					mod: actor.flags.obsidian.spells.attack.bonus,
+					name: game.i18n.localize('OBSIDIAN.Bonus')
+				});
+			}
 		} else {
 			mods.push({
 				mod: data.abilities[hit.stat].mod,
@@ -807,6 +813,17 @@ export const Rolls = {
 				mod: data.attributes.prof,
 				name: game.i18n.localize('OBSIDIAN.ProfAbbr')
 			});
+		}
+
+		if (hit.stat === 'spell'
+			&& actor.flags.obsidian.spells.attack
+			&& !OBSIDIAN.notDefinedOrEmpty(actor.flags.obsidian.spells.attack.fixed))
+		{
+			return Rolls.d20Roll(
+				actor, [], [{
+					mod: Number(actor.flags.obsidian.spells.attack.fixed),
+					name: game.i18n.localize('OBSIDIAN.Fixed')
+				}], hit.crit);
 		}
 
 		return Rolls.d20Roll(actor, [], mods, hit.crit);
