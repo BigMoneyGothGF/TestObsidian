@@ -556,7 +556,7 @@ export class ObsidianEffectSheet extends ObsidianItemSheet {
 				// items array is what was just created. This might be a race
 				// condition but also perhaps not because of how the event loop
 				// works.
-				component.spells.push(created.actorData.items.last()._id);
+				component.spells.push(created.data.actorData.items.last()._id);
 			} else {
 				component.spells.push(created._id);
 			}

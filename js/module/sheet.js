@@ -128,7 +128,9 @@ export const Sheet = {
 				const actor = sheet.actor || sheet.parent.actor;
 				if (actor) {
 					const item = actor.data.obsidian.itemsByID.get(li.data('item-id'));
-					return item.type !== 'spell' || !item.flags.obsidian.parentComponent
+					return item.type !== 'spell'
+						|| !item.flags.obsidian.parentComponent
+						|| actor.data.type === 'npc'
 				}
 			}
 		};

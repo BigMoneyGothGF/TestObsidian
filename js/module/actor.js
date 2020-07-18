@@ -210,8 +210,17 @@ export class ObsidianActor extends Actor5e {
 						spell.flags.obsidian.parentComponent = c.uuid;
 					});
 
-					const ownedSpells =
+					let ownedSpells =
 						await this.createEmbeddedEntity('OwnedItem', c.spells);
+
+					// I think this is a race condition but I don't know of a
+					// better way without massively monkeypatching core foundry
+					// functions.
+					if (this.isToken) {
+						// We got an actor back rather than a list of items.
+						ownedSpells = ownedSpells.data.actorData.items.slice(c.spells.length * -1);
+					}
+
 					c.spells = [].concat(ownedSpells).map(spell => spell._id);
 				});
 

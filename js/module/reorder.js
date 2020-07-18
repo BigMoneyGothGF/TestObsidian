@@ -99,7 +99,11 @@ export const Reorder = {
 						'OwnedItem', ObsidianActor.duplicateItem(packItem.data));
 
 				if (item) {
-					src = item;
+					if (actor.isToken) {
+						src = item.data.actorData.items.last();
+					} else {
+						src = item;
+					}
 				} else {
 					return false;
 				}
@@ -109,8 +113,16 @@ export const Reorder = {
 						'OwnedItem', ObsidianActor.duplicateItem(game.items.get(data.id).data));
 
 				if (actor.isToken) {
-					src = src.actorData.items.last();
+					src = src.data.actorData.items.last();
 				}
+			}
+
+			// Since the createOwnedItem hook doesn't fire for synthetic token
+			// actors, the best I can think of is to put the call to
+			// importSpells here. It should handle most use cases but we still
+			// can't guarantee it will run in all cases.
+			if (actor.isToken && src) {
+				actor.importSpells(src);
 			}
 		}
 
