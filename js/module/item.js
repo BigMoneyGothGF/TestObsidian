@@ -1,7 +1,7 @@
 import Item5e from '../../../../systems/dnd5e/module/item/entity.js';
 import {Prepare} from '../data/prepare.js';
 import {OBSIDIAN} from '../global.js';
-import {Effect} from './effect.js';
+import {ObsidianEffects} from './effects.js';
 import {Filters} from '../data/filters.js';
 import {cssIconHexagon} from '../util/html.js';
 import {Config} from '../data/config.js';
@@ -33,9 +33,9 @@ export function patchItem5e () {
 
 	Item5e.prototype._onDelete = (function () {
 		const cached = Item5e.prototype._onDelete;
-		return async function (options) {
+		return async function (options, userId) {
 			await cached.apply(this, arguments);
-			if (!this.isEmbedded || !this.isObsidian()) {
+			if (!this.isEmbedded || !this.isObsidian() || userId !== game.user.id) {
 				return;
 			}
 
@@ -111,14 +111,15 @@ export function patchItem5e () {
 					expandObject(OBSIDIAN.updateArrays(this.data._source, data)),
 					{inplace: false});
 
-			const effects = duplicate(parentItem.getFlag('obsidian', 'effects'));
+			const effects = parentItem.effects.toObject();
 			const component =
-				effects.flatMap(e => e.components).find(c => c.uuid === parentComponent);
+				effects.flatMap(e => e.flags?.obsidian?.components || [])
+				       .find(c => c.uuid === parentComponent);
 
 			const idx = component.spells.findIndex(spell => spell._id === this.id);
 			component.spells[idx] = newData;
 
-			await parentItem.setFlag('obsidian', 'effects', effects);
+			await parentItem.update({effects}, {diff: false, recursive: false});
 			this.data.update(newData, {recursive: false});
 			return this.sheet._render(false);
 		};
@@ -580,8 +581,8 @@ function prepareEffects (item) {
 		effect.applies = [];
 		effect.isLinked = false;
 
-		Effect.metadata.single.forEach(single => effect[`${single}Component`] = null);
-		Effect.metadata.linked.forEach(linked => {
+		ObsidianEffects.metadata.single.forEach(single => effect[`${single}Component`] = null);
+		ObsidianEffects.metadata.linked.forEach(linked => {
 			const found = effect.components.find(c => c.type === linked);
 			const bool = `is${linked.capitalize()}`;
 			const self = `self${linked.capitalize()}`;
@@ -605,7 +606,7 @@ function prepareEffects (item) {
 			component.parentEffect = effect.uuid;
 			component.idx = componentIdx;
 
-			if (Effect.metadata.single.has(component.type)) {
+			if (ObsidianEffects.metadata.single.has(component.type)) {
 				effect[`${component.type}Component`] = component;
 			} else if (!effect.isLinked) {
 				let collection = component.type;
@@ -628,12 +629,15 @@ function prepareEffects (item) {
 				.forEach(atk => atk.targets = effect.targetComponent.count);
 		}
 
-		if (!effect.isLinked && !effect.components.some(c => Effect.metadata.active.has(c.type))) {
+		if (!effect.isLinked
+			&& !effect.components.some(c => ObsidianEffects.metadata.active.has(c.type)))
+		{
 			derived.actionable.push(effect);
 		}
 
 		const isRollable =
-			effect.selfApplied || effect.components.some(c => Effect.metadata.rollable.has(c.type));
+			effect.selfApplied
+			|| effect.components.some(c => ObsidianEffects.metadata.rollable.has(c.type));
 
 		if (isRollable
 			&& item.type !== 'spell'
@@ -714,7 +718,7 @@ function prepareEffects (item) {
 				scaledAmount = actorData.flags.obsidian.summon.upcast || 0;
 			}
 
-			const scaling = Effect.getScaling(item.actor, effect, scaledAmount);
+			const scaling = ObsidianEffects.getScaling(item.actor, effect, scaledAmount);
 			if (!scaling) {
 				return;
 			}
@@ -727,7 +731,7 @@ function prepareEffects (item) {
 					.filter(c => c.type === 'attack')
 					.forEach(atk =>
 						atk.targets =
-							Effect.scaleConstant(
+							ObsidianEffects.scaleConstant(
 								scaling, scaledAmount, atk.targets, targetComponent.count));
 			}
 
@@ -741,7 +745,7 @@ function prepareEffects (item) {
 								&& c.die === dmg.die);
 
 						if (existing) {
-							Effect.scaleExistingDamage(dmg, existing, scaling, scaledAmount);
+							ObsidianEffects.scaleExistingDamage(dmg, existing, scaling, scaledAmount);
 							existing.display = Prepare.damageFormat(existing);
 						}
 					}

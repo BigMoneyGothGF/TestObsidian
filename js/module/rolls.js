@@ -1,6 +1,6 @@
 import {OBSIDIAN} from '../global.js';
 import {determineAdvantage, determineMode} from '../data/prepare.js';
-import {Effect} from './effect.js';
+import {ObsidianEffects} from './effects.js';
 import {Filters} from '../data/filters.js';
 import AbilityTemplate from '../../../../systems/dnd5e/module/pixi/ability-template.js';
 import {bonusToParts, highestProficiency} from '../data/bonuses.js';
@@ -22,9 +22,9 @@ export const Rolls = {
 	abilityCheck: function (actor, ability, skill, parts = [], rollMod) {
 		if (!skill) {
 			rollMod =
-				Effect.determineRollMods(
+				ObsidianEffects.determineRollMods(
 					actor,
-					Effect.combineRollMods([
+					ObsidianEffects.combineRollMods([
 						rollMod, conditionsRollMod(actor, {ability, roll: 'ability'})]),
 					mode =>	Filters.appliesTo.abilityChecks(ability, mode));
 
@@ -182,7 +182,7 @@ export const Rolls = {
 				rolls.push(...tokens.map(t =>
 					Rolls.abilityCheck(
 						t.actor, component.ability, false, [],
-						Effect.sheetGlobalRollMod(t.actor))));
+						ObsidianEffects.sheetGlobalRollMod(t.actor))));
 			} else {
 				rolls.push(...tokens.map(t => {
 					const skill = Rolls.findSkill(t.actor, component.component);
@@ -191,7 +191,7 @@ export const Rolls = {
 					if (!skill && !tool) {
 						return Rolls.abilityCheck(
 							t.actor, component.ability, false, [],
-							Effect.sheetGlobalRollMod(t.actor));
+							ObsidianEffects.sheetGlobalRollMod(t.actor));
 					}
 
 					if (skill) {
@@ -297,7 +297,7 @@ export const Rolls = {
 	summon: function (evt) {
 		const msg = game.messages.get(evt.currentTarget.closest('.obsidian-msg').dataset.messageId);
 		const options = duplicate(evt.currentTarget.dataset);
-		const [actor, effect] = Effect.fromMessage(msg);
+		const [actor, effect] = ObsidianEffects.fromMessage(msg);
 
 		if (!actor || !effect) {
 			return;
@@ -378,7 +378,7 @@ export const Rolls = {
 			} else {
 				Rolls.toChat(actor,
 					Rolls.abilityCheck(
-						actor, options.abl, false, [], Effect.sheetGlobalRollMod(actor)));
+						actor, options.abl, false, [], ObsidianEffects.sheetGlobalRollMod(actor)));
 			}
 		} else if (roll === 'skl') {
 			if (!options.skl) {
@@ -494,11 +494,11 @@ export const Rolls = {
 
 		let scaling;
 		if (scaledAmount) {
-			scaling = Effect.getScaling(actor, effect, scaledAmount);
+			scaling = ObsidianEffects.getScaling(actor, effect, scaledAmount);
 		}
 
 		if (scaling) {
-			damage = Effect.scaleDamage(actor, scaling, scaledAmount, damage);
+			damage = ObsidianEffects.scaleDamage(actor, scaling, scaledAmount, damage);
 		}
 
 		if (!item || !damage.length) {
@@ -536,9 +536,9 @@ export const Rolls = {
 		}];
 
 		const rollMod =
-			Effect.determineRollMods(
+			ObsidianEffects.determineRollMods(
 				actor,
-				Effect.makeModeRollMod([
+				ObsidianEffects.makeModeRollMod([
 					flags.sheet.roll, flags.saves.roll, flags.attributes.death.roll]),
 				mode => Filters.appliesTo.deathSaves(mode));
 
@@ -669,11 +669,11 @@ export const Rolls = {
 		}
 
 		const scaling =
-			Effect.getScaling(actor, effect,
+			ObsidianEffects.getScaling(actor, effect,
 				options.consumed || options.spellLevel || scaledAmount);
 
 		if (scaledAmount && scaling) {
-			damage = Effect.scaleDamage(actor, scaling, scaledAmount, damage);
+			damage = ObsidianEffects.scaleDamage(actor, scaling, scaledAmount, damage);
 		}
 
 		const duration = Rolls.rollDuration(actor, effect);
@@ -689,7 +689,7 @@ export const Rolls = {
 
 			if (targetScaling) {
 				scaledTargets =
-					Effect.scaleConstant(scaling, scaledAmount, scaledTargets, targetScaling.count);
+					ObsidianEffects.scaleConstant(scaling, scaledAmount, scaledTargets, targetScaling.count);
 			}
 		}
 
@@ -804,7 +804,7 @@ export const Rolls = {
 		const consumer = effect.components.find(c => c.type === 'consume');
 
 		if (consumer && !['qty', 'spell'].includes(consumer.target)) {
-			const [, , refResource] = Effect.getLinkedResource(actor, consumer);
+			const [, , refResource] = ObsidianEffects.getLinkedResource(actor, consumer);
 			if (refResource?.pool) {
 				resource = refResource;
 			}
@@ -822,7 +822,7 @@ export const Rolls = {
 	},
 
 	hd: function (actor, rolls, conBonus) {
-		const rollMod = Effect.combineRollMods(actor.data.obsidian.filters.mods(Filters.isHD));
+		const rollMod = ObsidianEffects.combineRollMods(actor.data.obsidian.filters.mods(Filters.isHD));
 		const parts = rolls.map(([n, d]) => {
 			return {mod: 0, ndice: n, die: d};
 		});
@@ -883,10 +883,10 @@ export const Rolls = {
 		const derived = actor.data.obsidian;
 		const parts = duplicate(derived.attributes.init.rollParts);
 		const rollMod =
-			Effect.determineRollMods(
+			ObsidianEffects.determineRollMods(
 				actor,
-				Effect.combineRollMods([
-					Effect.makeModeRollMod([flags.sheet.roll, flags.attributes.init.roll]),
+				ObsidianEffects.combineRollMods([
+					ObsidianEffects.makeModeRollMod([flags.sheet.roll, flags.attributes.init.roll]),
 					conditionsRollMod(
 						actor, {ability: flags.attributes.init.ability, roll: 'ability'})
 				]),
@@ -979,7 +979,7 @@ export const Rolls = {
 	placeTemplate: function (evt) {
 		const msg = game.messages.get(evt.currentTarget.closest('.obsidian-msg').dataset.messageId);
 		const options = evt.currentTarget.dataset;
-		const [actor, effect] = Effect.fromMessage(msg);
+		const [actor, effect] = ObsidianEffects.fromMessage(msg);
 
 		if (!actor || !effect) {
 			return;
@@ -998,7 +998,7 @@ export const Rolls = {
 		let scaledDistance = aoe.distance;
 		const scaledAmount = options.scaling || 0;
 		const scaling =
-			Effect.getScaling(
+			ObsidianEffects.getScaling(
 				actor, effect, options.consumed || options.spellLevel || options.scaling);
 
 		if (scaledAmount && scaling) {
@@ -1007,7 +1007,7 @@ export const Rolls = {
 
 			if (aoeScaling) {
 				scaledDistance =
-					Effect.scaleConstant(
+					ObsidianEffects.scaleConstant(
 						scaling, scaledAmount, scaledDistance, aoeScaling.distance);
 			}
 		}
@@ -1101,13 +1101,13 @@ export const Rolls = {
 
 			if (dmg.addMods !== false) {
 				const rollMods =
-					Effect.filterDamage(actor.data, actor.data.obsidian.filters.mods, dmg);
+					ObsidianEffects.filterDamage(actor.data, actor.data.obsidian.filters.mods, dmg);
 
 				if (dmg.rollMod) {
 					rollMods.push(dmg.rollMod);
 				}
 
-				const rollMod = Effect.combineRollMods(rollMods);
+				const rollMod = ObsidianEffects.combineRollMods(rollMods);
 				RollParts.applyRollModifiers(parts, rollMod);
 			}
 
@@ -1251,10 +1251,10 @@ export const Rolls = {
 		}
 
 		const rollMod =
-			Effect.determineRollMods(
+			ObsidianEffects.determineRollMods(
 				actor,
-				Effect.combineRollMods([
-					Effect.makeModeRollMod([flags.sheet.roll, ...adv]),
+				ObsidianEffects.combineRollMods([
+					ObsidianEffects.makeModeRollMod([flags.sheet.roll, ...adv]),
 					conditionsRollMod(actor, {
 						ability: save,
 						roll: 'save',
@@ -1301,10 +1301,10 @@ export const Rolls = {
 	skillCheck: function (actor, skill, prop, filter) {
 		const flags = actor.data.flags.obsidian;
 		const rollMod =
-			Effect.determineRollMods(
+			ObsidianEffects.determineRollMods(
 				actor,
-				Effect.combineRollMods([
-					Effect.makeModeRollMod([flags.sheet.roll, flags.skills.roll, skill.roll]),
+				ObsidianEffects.combineRollMods([
+					ObsidianEffects.makeModeRollMod([flags.sheet.roll, flags.skills.roll, skill.roll]),
 					conditionsRollMod(actor, {ability: skill.ability, skill: skill.key})
 				]), mode => filter(skill.key, skill.ability, mode));
 
@@ -1420,7 +1420,7 @@ export const Rolls = {
 		}
 
 		const rollMods = [
-			Effect.sheetGlobalRollMod(actor),
+			ObsidianEffects.sheetGlobalRollMod(actor),
 			conditionsRollMod(actor, {ability: hit.ability, roll: 'attack'})
 		];
 
@@ -1437,7 +1437,7 @@ export const Rolls = {
 		}
 
 		const rollMod =
-			Effect.determineRollMods(actor, Effect.combineRollMods(rollMods), mode =>
+			ObsidianEffects.determineRollMods(actor, ObsidianEffects.combineRollMods(rollMods), mode =>
 				Filters.appliesTo.attackRolls(hit, mode));
 
 		return Rolls.d20Roll(actor, [...hit.rollParts, ...extraParts], hit.crit, 1, rollMod);

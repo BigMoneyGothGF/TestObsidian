@@ -1,5 +1,5 @@
 import {Partitioner} from '../util/partition.js';
-import {Effect} from './effect.js';
+import {ObsidianEffects} from './effects.js';
 
 class ObsidianDerived {
 	toObject (source = true) {
@@ -59,6 +59,6 @@ export class ObsidianItemDerived extends ObsidianDerived {
 		this.collection = {versatile: []};
 		this.notes = [];
 
-		Effect.metadata.components.forEach(c => this.collection[c] = []);
+		ObsidianEffects.metadata.components.forEach(c => this.collection[c] = []);
 	}
 }

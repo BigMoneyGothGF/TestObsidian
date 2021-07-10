@@ -1,5 +1,5 @@
 import {ObsidianActor} from './actor.js';
-import {Effect} from './effect.js';
+import {ObsidianEffects} from './effects.js';
 
 let dnd5eDrop;
 
@@ -163,7 +163,7 @@ function resourcesFromItem (actor, id) {
 
 	const consumer = item.obsidian.collection.consume[0];
 	if (consumer) {
-		const [, , resource] = Effect.getLinkedResource(actor, consumer);
+		const [, , resource] = ObsidianEffects.getLinkedResource(actor, consumer);
 		if (resource) {
 			return [resource.remaining, resource.max];
 		}

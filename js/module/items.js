@@ -2,7 +2,7 @@ import {ObsidianConsumeSlotDialog} from '../dialogs/consume-slot.js';
 import {ObsidianResourceScalingDialog} from '../dialogs/resource-scaling.js';
 import {ObsidianActionableDialog} from '../dialogs/actionable.js';
 import {Rolls} from './rolls.js';
-import {Effect} from './effect.js';
+import {ObsidianEffects} from './effects.js';
 import {OBSIDIAN} from '../global.js';
 import {ObsidianActor} from './actor.js';
 
@@ -180,7 +180,7 @@ export const ObsidianItems = {
 			if (consumer.target === 'qty') {
 				ObsidianItems.consumeQuantity(actor, consumer, options.consumed, updates);
 			} else if (consumer.target !== 'spell') {
-				const [refItem, refEffect, resource] = Effect.getLinkedResource(actor, consumer);
+				const [refItem, refEffect, resource] = ObsidianEffects.getLinkedResource(actor, consumer);
 
 				if (refItem && refEffect && resource) {
 					ObsidianItems.useResource(
@@ -215,7 +215,7 @@ export const ObsidianItems = {
 					ObsidianItems.produceSpellSlot(actor, producer.slot, producer.unlimited);
 				} else {
 					const [refItem, refEffect, resource] =
-						Effect.getLinkedResource(actor, producer);
+						ObsidianEffects.getLinkedResource(actor, producer);
 
 					if (refItem && refEffect && resource) {
 						ObsidianItems.useResource(

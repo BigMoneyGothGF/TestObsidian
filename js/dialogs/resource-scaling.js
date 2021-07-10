@@ -1,4 +1,4 @@
-import {Effect} from '../module/effect.js';
+import {ObsidianEffects} from '../module/effects.js';
 import {ObsidianStandaloneDialog} from './standalone.js';
 import {ObsidianItems} from '../module/items.js';
 
@@ -43,7 +43,7 @@ export class ObsidianResourceScalingDialog extends ObsidianStandaloneDialog {
 			if (this._consumers[0].target === 'qty') {
 				data.available = this._item.data.data.quantity;
 			} else {
-				const [, , resource] = Effect.getLinkedResource(this._actor, this._consumers[0]);
+				const [, , resource] = ObsidianEffects.getLinkedResource(this._actor, this._consumers[0]);
 
 				if (resource) {
 					data.available = resource.remaining;

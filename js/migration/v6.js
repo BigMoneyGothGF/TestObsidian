@@ -1,5 +1,5 @@
 import {OBSIDIAN} from '../global.js';
-import {Effect} from '../module/effect.js';
+import {ObsidianEffects} from '../module/effects.js';
 
 export const v6 = {
 	convertBonuses: function (data) {
@@ -41,7 +41,7 @@ export const v6 = {
 };
 
 function makeBonus (original, type) {
-	const bonus = Effect.createComponent('bonus');
+	const bonus = ObsidianEffects.createComponent('bonus');
 	bonus.formula = true;
 
 	switch (type) {

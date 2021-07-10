@@ -17,13 +17,14 @@
 		{{else if (eq item.type 'loot')}}
 			{{> modules/obsidian/html/components/loot.html}}
 		{{/if}}
-		{{#each item.flags.obsidian.effects as |effect effectIndex|}}
-			<div class="obsidian-effect" data-uuid="{{effect.uuid}}">
-				<input type="text" value="{{effect.name}}" placeholder="{{localize 'OBSIDIAN.EffectName'}}"
-				       name="flags.obsidian.effects.{{effectIndex}}.name" class="obsidian-input-lg">
+		{{#each item.effects as |effect effectIndex|}}
+			<div class="obsidian-effect" data-id="{{effect._id}}">
+				<input type="hidden" name="effects.{{effectIndex}}._id" value="{{effect._id}}">
+				<input type="text" value="{{effect.label}}" placeholder="{{localize 'OBSIDIAN.EffectName'}}"
+				       name="effects.{{effectIndex}}.label" class="obsidian-input-lg">
 				{{#each components}}
 					{{> (add 'modules/obsidian/html/components/effects/' type '.html')
-							prefix=(add 'flags.obsidian.effects.' effectIndex '.components.' @index)}}
+							prefix=(add 'effects.' effectIndex '.components.' @index)}}
 				{{/each}}
 			</div>
 		{{/each}}

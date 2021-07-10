@@ -1,7 +1,7 @@
 import {CONVERT} from './convert.js';
 import {OBSIDIAN} from '../global.js';
 import {Migrate} from './migrate.js';
-import {Effect} from '../module/effect.js';
+import {ObsidianEffects} from '../module/effects.js';
 
 const OPERATORS = {
 	'+': (a, b) => a + b,
@@ -43,7 +43,7 @@ export const core = {
 			}
 
 			const target = data.data.target;
-			const component = Effect.createComponent('target');
+			const component = ObsidianEffects.createComponent('target');
 			effect.components.push(component);
 
 			if (target.type === 'creature' || target.type === 'object') {
@@ -58,14 +58,14 @@ export const core = {
 		if ((getProperty(data.data, 'uses.max') || 0) > 0) {
 			let effect;
 			if (data.type === 'spell') {
-				effect = Effect.create();
+				effect = ObsidianEffects.create();
 				data.flags.obsidian.effects.push(effect);
 			} else {
 				effect = getPrimaryEffect(data);
 			}
 
 			const uses = data.data.uses;
-			const component = Effect.createComponent('resource');
+			const component = ObsidianEffects.createComponent('resource');
 			effect.components.push(component);
 
 			if (!effect.name.length) {
@@ -102,7 +102,7 @@ export const core = {
 				effect = getPrimaryEffect(data);
 			}
 
-			const component = Effect.createComponent('attack');
+			const component = ObsidianEffects.createComponent('attack');
 			effect.components.push(component);
 
 			if (action[0] === 'r') {
@@ -176,7 +176,7 @@ export const core = {
 				effect = getPrimaryEffect(data);
 			}
 
-			const component = Effect.createComponent('save');
+			const component = ObsidianEffects.createComponent('save');
 			effect.components.push(component);
 			component.target = save.ability;
 
@@ -202,7 +202,7 @@ export const core = {
 				scaling.method = 'cantrip';
 			}
 
-			const component = Effect.createComponent('damage');
+			const component = ObsidianEffects.createComponent('damage');
 			scalingEffect.components.push(component);
 
 			const existingDamage = spellEffect.components.find(c => c.type === 'damage');
@@ -247,7 +247,7 @@ export const core = {
 			return;
 		}
 
-		const component = Effect.createComponent('damage');
+		const component = ObsidianEffects.createComponent('damage');
 		if (Array.isArray(dmg) && CONVERT.damage[dmg[1]]) {
 			component.damage = CONVERT.damage[dmg[1]];
 		}
@@ -338,7 +338,7 @@ export const core = {
 
 function getPrimaryEffect (data) {
 	if (!data.flags.obsidian.effects || !data.flags.obsidian.effects.length) {
-		data.flags.obsidian.effects = [Effect.create()];
+		data.flags.obsidian.effects = [ObsidianEffects.create()];
 	}
 
 	return data.flags.obsidian.effects[0];
@@ -346,7 +346,7 @@ function getPrimaryEffect (data) {
 
 function getSpellEffect (data) {
 	if (!data.flags.obsidian.effects || !data.flags.obsidian.effects.length) {
-		data.flags.obsidian.effects = [Effect.create()];
+		data.flags.obsidian.effects = [ObsidianEffects.create()];
 	}
 
 	let effect =
@@ -354,7 +354,7 @@ function getSpellEffect (data) {
 			!e.components.some(c => c.type === 'scaling' || c.type === 'resource'));
 
 	if (!effect) {
-		effect = Effect.create();
+		effect = ObsidianEffects.create();
 		data.flags.obsidian.effects.push(effect);
 	}
 
@@ -363,18 +363,18 @@ function getSpellEffect (data) {
 
 function getScalingEffect (data) {
 	if (!data.flags.obsidian.effects || !data.flags.obsidian.effects.length) {
-		data.flags.obsidian.effects = [Effect.create()];
+		data.flags.obsidian.effects = [ObsidianEffects.create()];
 		data.flags.obsidian.effects[0].name = game.i18n.localize('OBSIDIAN.ScalingTitle');
-		data.flags.obsidian.effects[0].components.push(Effect.createComponent('scaling'));
+		data.flags.obsidian.effects[0].components.push(ObsidianEffects.createComponent('scaling'));
 	}
 
 	let effect =
 		data.flags.obsidian.effects.find(e => e.components.some(c => c.type === 'scaling'));
 
 	if (!effect) {
-		effect = Effect.create();
+		effect = ObsidianEffects.create();
 		effect.name = game.i18n.localize('OBSIDIAN.ScalingTitle');
-		effect.components.push(Effect.createComponent('scaling'));
+		effect.components.push(ObsidianEffects.createComponent('scaling'));
 		data.flags.obsidian.effects.push(effect);
 	}
 

@@ -21,10 +21,6 @@ export class ObsidianItemSheet extends ItemSheet {
 		return options;
 	}
 
-	/**
-	 * @param html {JQuery}
-	 * @return undefined
-	 */
 	activateListeners (html) {
 		super.activateListeners(html);
 		console.debug(this.item);
@@ -46,7 +42,7 @@ export class ObsidianItemSheet extends ItemSheet {
 
 		if (data.actor) {
 			data.actor.data.feats =
-				data.actor.obsidian.itemsByType.get('feat').map(i => duplicate(i.toObject(false)));
+				data.actor.obsidian.itemsByType.get('feat').map(i => i.toObject(false));
 		}
 
 		return data;

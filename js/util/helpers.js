@@ -1,6 +1,6 @@
 import {OBSIDIAN} from '../global.js';
 import {Prepare} from '../data/prepare.js';
-import {Effect} from '../module/effect.js';
+import {ObsidianEffects} from '../module/effects.js';
 import {getEffectLabel} from '../module/item.js';
 import {DND5E} from '../../../../systems/dnd5e/module/config.js';
 import {cssIconHexagon, fancyCheckbox} from './html.js';
@@ -163,7 +163,7 @@ export function registerHandlebarHelpers () {
 			}
 
 			actor = game.actors.get(actor._id);
-			const [, , resource] = Effect.getLinkedResource(actor, consumer);
+			const [, , resource] = ObsidianEffects.getLinkedResource(actor, consumer);
 
 			if (resource && getProperty(resource, 'recharge.time')) {
 				parts.push(formatRecharge(resource.recharge));
@@ -242,7 +242,7 @@ export function registerHandlebarHelpers () {
 			// This data is actually duplicated so we lose our maps and need to
 			// instead get the actual actor instance.
 			actor = game.actors.get(actor._id);
-			const [item, effect, resource] = Effect.getLinkedResource(actor, consumer);
+			const [item, effect, resource] = ObsidianEffects.getLinkedResource(actor, consumer);
 
 			if (item && effect && resource) {
 				return new Handlebars.SafeString(Prepare.usesFormat(item, effect, resource));

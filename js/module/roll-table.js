@@ -10,8 +10,11 @@ export default class ObsidianTable extends RollTable {
 	_getEmbeddedTable () {
 		const parentItem = this.options.parentItem;
 		const parentComponent = this.getFlag('obsidian', 'parentComponent');
-		const effects = duplicate(parentItem.getFlag('obsidian', 'effects'));
-		const component = effects.flatMap(e => e.components).find(c => c.uuid === parentComponent);
+		const effects = parentItem.effects.toObject();
+		const component =
+			effects.flatMap(e => e.flags?.obsidian?.components || [])
+			       .find(c => c.uuid === parentComponent);
+
 		const table = component.tables.find(table => table._id === this.id);
 		return [effects, table];
 	}
@@ -21,7 +24,7 @@ export default class ObsidianTable extends RollTable {
 		table.results = results;
 		this.data.update(table, {recursive: false});
 		this.sheet.render(false);
-		return this.options.parentItem.setFlag('obsidian', 'effects', effects);
+		return this.options.parentItem.update({effects}, {diff: false, recursive: false});
 	}
 
 	getEmbeddedDocument (embeddedName, id, {strict = false} = {}) {
@@ -86,14 +89,15 @@ export default class ObsidianTable extends RollTable {
 				expandObject(OBSIDIAN.updateArrays(this.data._source, data)),
 				{inplace: false});
 
-		const effects = duplicate(parentItem.getFlag('obsidian', 'effects'));
+		const effects = parentItem.effects.toObject();
 		const component =
-			effects.flatMap(e => e.components).find(c => c.uuid === parentComponent);
+			effects.flatMap(e => e.flags?.obsidian?.components || [])
+			       .find(c => c.uuid === parentComponent);
 
 		const idx = component.tables.findIndex(table => table._id === this.id);
 		component.tables[idx] = newData;
 
-		await parentItem.setFlag('obsidian', 'effects', effects);
+		await parentItem.update({effects}, {diff: false, recursive: false});
 		this.data.update(newData, {recursive: false});
 
 		// We have to bypass the normal render and instead return the async

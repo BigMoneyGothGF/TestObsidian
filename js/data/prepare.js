@@ -1,7 +1,7 @@
 import {OBSIDIAN} from '../global.js';
 import {Filters} from './filters.js';
 import {bonusToParts, highestProficiency} from './bonuses.js';
-import {Effect} from '../module/effect.js';
+import {ObsidianEffects} from '../module/effects.js';
 import {Config} from './config.js';
 import {conditionsRollMod} from '../module/conditions.js';
 import {Schema} from './schema.js';
@@ -116,8 +116,8 @@ export const Prepare = {
 
 		if (actorData?.obsidian) {
 			const filter = pred(component);
-			component.value = Effect.applyMultipliers(actor, filter, component.value);
-			component.value = Effect.applySetters(actor, filter, component.value);
+			component.value = ObsidianEffects.applyMultipliers(actor, filter, component.value);
+			component.value = ObsidianEffects.applySetters(actor, filter, component.value);
 		}
 	},
 
@@ -175,7 +175,7 @@ export const Prepare = {
 		Prepare.spellPart(dmg, data, cls);
 
 		if (actor?.obsidian) {
-			const bonuses = Effect.filterDamage(actorData, actorData.obsidian.filters.bonuses, dmg);
+			const bonuses = ObsidianEffects.filterDamage(actorData, actorData.obsidian.filters.bonuses, dmg);
 			if (bonuses.length) {
 				dmg.rollParts.push(...bonuses.flatMap(bonus => bonusToParts(actor, bonus)));
 			}
@@ -336,9 +336,9 @@ export const Prepare = {
 			}
 
 			const filter = Filters.appliesTo.abilityScores(id);
-			ability.value += Effect.applyBonuses(actor, filter);
-			ability.value = Effect.applyMultipliers(actor, filter, ability.value);
-			ability.value = Effect.applySetters(actor, filter, ability.value);
+			ability.value += ObsidianEffects.applyBonuses(actor, filter);
+			ability.value = ObsidianEffects.applyMultipliers(actor, filter, ability.value);
+			ability.value = ObsidianEffects.applySetters(actor, filter, ability.value);
 			ability.mod = Math.floor((ability.value - 10) / 2);
 		}
 	},
@@ -453,7 +453,7 @@ export const Prepare = {
 			actorData.effects
 				.filter(item => getProperty(item, 'flags.obsidian.ref'))
 				.map(duration => derived.effects.get(duration.flags.obsidian.ref))
-				.some(effect => effect && Effect.isConcentration(actor, effect));
+				.some(effect => effect && ObsidianEffects.isConcentration(actor, effect));
 	},
 
 	encumbrance: function (actor, data, derived) {
@@ -465,9 +465,9 @@ export const Prepare = {
 		const sizeMod = Config.ENCUMBRANCE_SIZE_MOD[data.traits.size] || 1;
 
 		inventory.max = str * sizeMod * CONFIG.DND5E.encumbrance.strMultiplier;
-		inventory.max += Effect.applyBonuses(actor, Filters.isCarry);
-		inventory.max = Effect.applyMultipliers(actor, Filters.isCarry, inventory.max);
-		inventory.max = Effect.applySetters(actor, Filters.isCarry, inventory.max);
+		inventory.max += ObsidianEffects.applyBonuses(actor, Filters.isCarry);
+		inventory.max = ObsidianEffects.applyMultipliers(actor, Filters.isCarry, inventory.max);
+		inventory.max = ObsidianEffects.applySetters(actor, Filters.isCarry, inventory.max);
 
 		rules.encumbered = false;
 		rules.heavilyEncumbered = false;
@@ -613,7 +613,7 @@ export const Prepare = {
 
 			const rollMods = derived.filters.mods(filter);
 			const rollMod =
-				Effect.combineRollMods(
+				ObsidianEffects.combineRollMods(
 					rollMods.concat(conditionsRollMod(actor, {ability: skill.ability, skill: id})));
 
 			skill.mod = Math.floor(skill.rollParts.reduce((acc, part) => acc + part.mod, 0));
@@ -627,9 +627,9 @@ export const Prepare = {
 			skill.key = id;
 			skill.passive = 10 + skill.mod + (skill.passiveBonus || 0);
 			skill.passive += 5 * determineAdvantage(skill.roll, flags.skills.roll, ...rollMod.mode);
-			skill.passive += Effect.applyBonuses(actor, filter);
-			skill.passive = Effect.applyMultipliers(actor, filter, skill.passive);
-			skill.passive = Effect.applySetters(actor, filter, skill.passive);
+			skill.passive += ObsidianEffects.applyBonuses(actor, filter);
+			skill.passive = ObsidianEffects.applyMultipliers(actor, filter, skill.passive);
+			skill.passive = ObsidianEffects.applySetters(actor, filter, skill.passive);
 		}
 	},
 

@@ -29,11 +29,13 @@ import {translateLabels} from './labels.js';
 import ObsidianTableResult from './module/table-result.js';
 import {ObsidianCharacter} from './sheets/obsidian.js';
 import {extendPrimitives} from './util/primitives.js';
+import ObsidianEffect from './module/effect.js';
 
 runPatches();
 extendPrimitives();
 
 Hooks.once('init', async function () {
+	CONFIG.ActiveEffect.documentClass = ObsidianEffect;
 	CONFIG.TableResult.documentClass = ObsidianTableResult;
 	CONFIG.RollTable.documentClass = ObsidianTable;
 	CONFIG.Actor.documentClass = ObsidianActor;
@@ -108,7 +110,7 @@ Hooks.on('renderCompendium', (compendium, html) => {
 		.append($('<span class="obsidian-clear-search">&times;</span>'));
 	html.find('.header-search > span').click(evt => {
 		evt.currentTarget.previousElementSibling.previousElementSibling.value = '';
-		compendium._onFilterResults({currentTarget: {value: ''}, preventDefault: () => {}});
+		compendium._onSearchFilter(null, null, new RegExp(''), html.find('.directory-list')[0]);
 	});
 });
 

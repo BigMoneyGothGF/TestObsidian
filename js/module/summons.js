@@ -1,6 +1,6 @@
 import {OBSIDIAN} from '../global.js';
 import {Schema} from '../data/schema.js';
-import {Effect} from './effect.js';
+import {ObsidianEffects} from './effects.js';
 import {ObsidianActor} from './actor.js';
 
 export const Summons = {
@@ -194,9 +194,9 @@ export const Summons = {
 			}
 		};
 
-		const effect = Effect.create();
-		const setter = Effect.createComponent('setter');
-		const filter = Effect.createComponent('filter');
+		const effect = ObsidianEffects.create();
+		const setter = ObsidianEffects.createComponent('setter');
+		const filter = ObsidianEffects.createComponent('filter');
 
 		setter.score = targetProf;
 		filter.filter = 'score';

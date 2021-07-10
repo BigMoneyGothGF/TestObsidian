@@ -1,7 +1,7 @@
 import {Schema} from '../data/schema.js';
 import {ObsidianHeaderDetailsDialog} from '../dialogs/char-header.js';
 import {OBSIDIAN} from '../global.js';
-import {Effect} from '../module/effect.js';
+import {ObsidianEffects} from '../module/effects.js';
 import {Config} from '../data/config.js';
 import {CONVERT} from './convert.js';
 import {core} from './core.js';
@@ -189,9 +189,9 @@ export const Migrate = {
 			&& data.flags.obsidian.version < 2
 			&& !data.flags.obsidian.effects?.length)
 		{
-			data.flags.obsidian.effects = [Effect.create()];
+			data.flags.obsidian.effects = [ObsidianEffects.create()];
 			data.flags.obsidian.effects[0].components =
-				[Effect.createComponent('attack'), Effect.createComponent('damage')];
+				[ObsidianEffects.createComponent('attack'), ObsidianEffects.createComponent('damage')];
 			data.flags.obsidian.effects[0].components[0].proficient = true;
 		}
 
@@ -204,10 +204,10 @@ export const Migrate = {
 					e.components.some(c => c.type === 'consume' || c.type === 'resource'))))
 		{
 			if (!data.flags.obsidian.effects || !data.flags.obsidian.effects.length) {
-				data.flags.obsidian.effects.push(Effect.create());
+				data.flags.obsidian.effects.push(ObsidianEffects.create());
 			}
 
-			const component = Effect.createComponent('consume');
+			const component = ObsidianEffects.createComponent('consume');
 			component.target = 'qty';
 			data.flags.obsidian.effects[0].components.push(component);
 		}
@@ -341,12 +341,13 @@ export const Migrate = {
 					.map(prof => prof.trim())
 					.filter(prof => prof.length));
 
-			tools.custom.push(...custom.map(prof => {
-				return {
+			for (const tool of custom) {
+				const id = tool.slugify({strict: true});
+				tools[id] = {
 					ability: 'str', bonus: 0, value: 1, custom: true, enabled: true,
-					label: translateOrElseOriginal(`OBSIDIAN.ToolProf.${prof}`, prof)
-				}
-			}));
+					label: translateOrElseOriginal(`OBSIDIAN.ToolProf.${tool}`, tool)
+				};
+			}
 		}
 	},
 

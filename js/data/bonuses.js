@@ -1,6 +1,6 @@
 import {Filters} from './filters.js';
 import {OBSIDIAN} from '../global.js';
-import {Effect} from '../module/effect.js';
+import {ObsidianEffects} from '../module/effects.js';
 import {ObsidianActor} from '../module/actor.js';
 
 export function applyBonuses (actor, data, flags, derived) {
@@ -34,16 +34,16 @@ function applyACBonuses (actor, data, flags) {
 	}
 
 	const ac = data.attributes.ac;
-	ac.value += Effect.applyBonuses(actor, Filters.isAC);
-	ac.value = Effect.applyMultipliers(actor, Filters.isAC, ac.value);
-	ac.value = Effect.applySetters(actor, Filters.isAC, ac.value);
+	ac.value += ObsidianEffects.applyBonuses(actor, Filters.isAC);
+	ac.value = ObsidianEffects.applyMultipliers(actor, Filters.isAC, ac.value);
+	ac.value = ObsidianEffects.applySetters(actor, Filters.isAC, ac.value);
 }
 
 function applyHPBonuses (actor, data, derived) {
 	const hp = data.attributes.hp;
-	hp.max += Effect.applyBonuses(actor, Filters.isHP);
-	hp.max = Effect.applyMultipliers(actor, Filters.isHP, hp.max);
-	hp.max = Effect.applySetters(actor, Filters.isHP, hp.max);
+	hp.max += ObsidianEffects.applyBonuses(actor, Filters.isHP);
+	hp.max = ObsidianEffects.applyMultipliers(actor, Filters.isHP, hp.max);
+	hp.max = ObsidianEffects.applySetters(actor, Filters.isHP, hp.max);
 
 	if (derived.conditions.exhaustion > 3) {
 		data.attributes.hp.max = Math.floor(data.attributes.hp.max / 2);
@@ -56,7 +56,7 @@ function applySpellBonuses (actor, derived) {
 	}
 
 	[['spellAttacks', 'attacks'], ['spellDCs', 'saves']].forEach(([filter, key]) => {
-		const total = Effect.applyBonuses(actor, Filters.appliesTo[filter]);
+		const total = ObsidianEffects.applyBonuses(actor, Filters.appliesTo[filter]);
 		derived.spellcasting[key] = derived.spellcasting[key].map(val => val + total);
 	});
 
@@ -69,7 +69,7 @@ function applySpellBonuses (actor, derived) {
 
 	const setters = derived.filters.setters(Filters.appliesTo.spellDCs);
 	if (setters.length) {
-		const setter = Effect.combineSetters(setters);
+		const setter = ObsidianEffects.combineSetters(setters);
 		derived.spellcasting.saves = derived.spellcasting.saves.map(save => {
 			if (!setter.min || setter.score > save) {
 				return setter.score;
@@ -96,9 +96,9 @@ function applySpeedBonuses (actor, data, derived) {
 		}
 
 		const filter = Filters.appliesTo.speedScores(key);
-		speeds[key] += Effect.applyBonuses(actor, filter);
-		speeds[key] = Effect.applyMultipliers(actor, filter, speeds[key]);
-		speeds[key] = Effect.applySetters(actor, filter, speeds[key]);
+		speeds[key] += ObsidianEffects.applyBonuses(actor, filter);
+		speeds[key] = ObsidianEffects.applyMultipliers(actor, filter, speeds[key]);
+		speeds[key] = ObsidianEffects.applySetters(actor, filter, speeds[key]);
 
 		if (exhaustion > 4 || conditions.grappled || conditions.paralysed || conditions.petrified
 			|| conditions.restrained || conditions.stunned || conditions.unconscious
@@ -128,9 +128,9 @@ export function applyProfBonus (actor) {
 	const actorData = actor.data;
 	const attr = actorData.data.attributes;
 
-	attr.prof += Effect.applyBonuses(actor, Filters.isProf);
-	attr.prof = Effect.applyMultipliers(actor, Filters.isProf, attr.prof);
-	attr.prof = Effect.applySetters(actor, Filters.isProf, attr.prof);
+	attr.prof += ObsidianEffects.applyBonuses(actor, Filters.isProf);
+	attr.prof = ObsidianEffects.applyMultipliers(actor, Filters.isProf, attr.prof);
+	attr.prof = ObsidianEffects.applySetters(actor, Filters.isProf, attr.prof);
 }
 
 function bonusName (actorData, bonus) {

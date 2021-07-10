@@ -1,4 +1,4 @@
-import {Effect} from '../module/effect.js';
+import {ObsidianEffects} from '../module/effects.js';
 
 export const v10 = {
 	convertAmmo: function (data) {
@@ -28,7 +28,7 @@ export const v10 = {
 					continue;
 				}
 
-				const bonus = Effect.createComponent('bonus');
+				const bonus = ObsidianEffects.createComponent('bonus');
 				bonus.formula = true;
 				bonus.method = 'formula';
 				bonus.constant = component.constant;

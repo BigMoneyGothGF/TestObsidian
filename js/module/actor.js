@@ -12,7 +12,7 @@ import {prepareDefenseDisplay, prepareDefenses} from '../data/defenses.js';
 import {Config} from '../data/config.js';
 import {Migrate} from '../migration/migrate.js';
 import {ObsidianNPC} from '../sheets/npc.js';
-import {Effect} from './effect.js';
+import {ObsidianEffects} from './effects.js';
 import {Filters} from '../data/filters.js';
 import {ObsidianCharacter} from '../sheets/obsidian.js';
 import {ObsidianActorDerived} from './derived.js';
@@ -125,7 +125,7 @@ export class ObsidianActor extends Actor5e {
 				effect.filters = [];
 				effect.active = {};
 				effect.isApplied = false;
-				Effect.metadata.active.forEach(c => effect.active[c] = []);
+				ObsidianEffects.metadata.active.forEach(c => effect.active[c] = []);
 
 				for (const component of effect.components) {
 					actorDerived.components.set(component.uuid, component);
@@ -133,7 +133,7 @@ export class ObsidianActor extends Actor5e {
 						effect.isApplied = true;
 					}
 
-					if (Effect.metadata.active.has(component.type)) {
+					if (ObsidianEffects.metadata.active.has(component.type)) {
 						effect.active[component.type].push(component);
 					} else if (component.type === 'filter') {
 						effect.filters.push(component);
@@ -141,7 +141,7 @@ export class ObsidianActor extends Actor5e {
 				}
 
 				const isToggleable = Object.values(effect.active).some(list => list.length);
-				if (isToggleable && Effect.isActive(item, effect)) {
+				if (isToggleable && ObsidianEffects.isActive(item, effect)) {
 					actorDerived.toggleable.push(effect);
 				}
 			}
@@ -351,7 +351,7 @@ export class ObsidianActor extends Actor5e {
 		for (const parentItem of items) {
 			const effects = duplicate(parentItem.data._source.flags.obsidian?.effects || []);
 			const components =
-				effects.flatMap(e => e.components).filter(Effect.isEmbeddedSpellsComponent);
+				effects.flatMap(e => e.components).filter(ObsidianEffects.isEmbeddedSpellsComponent);
 
 			if (!components?.length) {
 				continue;
@@ -389,7 +389,7 @@ export class ObsidianActor extends Actor5e {
 			spells.push(
 				...effects.flatMap(e => e.components)
 					.filter(c =>
-						Effect.isEmbeddedSpellsComponent(c)
+						ObsidianEffects.isEmbeddedSpellsComponent(c)
 						&& typeof c.spells[0] === 'object')
 					.flatMap(c =>
 						c.spells.filter(spell => spell.flags.obsidian.isEmbedded).map(spell => {

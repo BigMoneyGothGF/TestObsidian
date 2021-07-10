@@ -1,6 +1,6 @@
 import {ObsidianActor} from './actor.js';
 import {determineMode} from '../data/prepare.js';
-import {Effect} from './effect.js';
+import {ObsidianEffects} from './effects.js';
 
 const CONDITIONS = [
 	'dead', 'bleeding', 'blinded', 'charmed', 'deafened',
@@ -85,7 +85,7 @@ export function conditionsRollMod (actor, {ability, skill, roll, applies}) {
 		});
 	}
 
-	return Effect.makeModeRollMod(determineMode(...modes));
+	return ObsidianEffects.makeModeRollMod(determineMode(...modes));
 }
 
 export function targetConditionsRollMod (actorData, attackerWithin5ft) {
@@ -110,5 +110,5 @@ export function targetConditionsRollMod (actorData, attackerWithin5ft) {
 		}
 	}
 
-	return Effect.makeModeRollMod(determineMode(...modes));
+	return ObsidianEffects.makeModeRollMod(determineMode(...modes));
 }
