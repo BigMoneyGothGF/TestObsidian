@@ -25,7 +25,7 @@
 	"url": "https://bitbucket.org/Fyorl/obsidian",
 	"bugs": "https://bitbucket.org/Fyorl/obsidian/issues",
 	"manifest": "https://github.com/BigMoneyGothGF/TestObsidian/blob/d0fc722e0a36de75ef5278c2b6723ab95fca9967/module.json",
-	"download": "https://bitbucket.org/Fyorl/obsidian/get/5.1.1.zip",
+	"download": "https://github.com/BigMoneyGothGF/TestObsidian/archive/refs/heads/master.zip",
 	"license": "LICENSE",
 	"languages": [{
 		"lang": "en",
